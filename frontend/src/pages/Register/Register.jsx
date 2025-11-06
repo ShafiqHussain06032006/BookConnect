@@ -1,3 +1,6 @@
+// ============================================
+// FILE 1: Register.jsx
+// ============================================
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
@@ -26,18 +29,21 @@ const Register = () => {
   const handleGoogleSignUp = async () => {
     setLoading(true);
     setError('');
-    try {
-      const result = await register({ type: 'google' });
-      if (result.success) {
-        navigate('/');
-      } else {
-        setError(result.message || 'Google sign-up failed. Please try again.');
-      }
-    } catch (err) {
-      setError('Failed to sign up with Google. Please try again.');
-    } finally {
+    
+    // Temporary: Simulate Google signup success
+    setTimeout(() => {
+      // Store temporary user data
+      const tempUser = {
+        name: 'Google User',
+        email: 'googleuser@example.com',
+        loginMethod: 'google'
+      };
+      localStorage.setItem('user', JSON.stringify(tempUser));
+      localStorage.setItem('isAuthenticated', 'true');
+      
       setLoading(false);
-    }
+      navigate('/');
+    }, 1000);
   };
 
   const handleSubmit = async (e) => {
@@ -47,6 +53,7 @@ const Register = () => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const phoneRegex = /^\+?[1-9]\d{9,11}$/;
 
+    // Validation
     if (!formData.name || !formData.email || !formData.password || !formData.confirmPassword) {
       setError('Please fill in all required fields');
       return;
@@ -73,24 +80,23 @@ const Register = () => {
     }
 
     setLoading(true);
-    try {
-      const result = await register({
+    
+    // Temporary: Simulate registration success
+    setTimeout(() => {
+      // Store user data temporarily in localStorage
+      const tempUser = {
         name: formData.name,
         email: formData.email,
-        password: formData.password,
         phone: formData.phone,
-      });
-
-      if (result.success) {
-        navigate('/');
-      } else {
-        setError(result.message || 'Registration failed. Please try again.');
-      }
-    } catch (err) {
-      setError(err.message || 'An error occurred during registration.');
-    } finally {
+        loginMethod: 'email'
+      };
+      
+      localStorage.setItem('user', JSON.stringify(tempUser));
+      localStorage.setItem('isAuthenticated', 'true');
+      
       setLoading(false);
-    }
+      navigate('/');
+    }, 1000);
   };
 
   return (
@@ -282,3 +288,6 @@ const Register = () => {
 };
 
 export default Register;
+
+
+
