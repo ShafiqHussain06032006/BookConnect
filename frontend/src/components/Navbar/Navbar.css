@@ -44,63 +44,162 @@
   @apply hidden md:flex items-center space-x-4;
 }
 
-.user-info {
-  @apply flex items-center space-x-2;
-}
-
-.user-icon {
-  @apply w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center;
-}
-
-.user-icon span {
-  @apply text-blue-500 font-semibold text-sm;
-}
-
-.user-name {
-  @apply text-gray-700 font-medium;
-}
-
-.logout-btn {
-  @apply px-4 py-2 text-gray-700 hover:text-blue-500 font-medium transition-all duration-200;
-}
-
 .signin-btn {
   @apply px-4 py-2 text-gray-700 hover:text-blue-500 font-medium;
 }
 
 .signup-btn {
-  @apply bg-blue-500 text-white px-4 py-2 rounded-lg font-medium;
+  @apply bg-blue-500 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-600 transition-all;
 }
 
-/* Mobile */
+/* Profile Dropdown Container */
+.profile-dropdown-container {
+  @apply relative;
+}
+
+.profile-button {
+  @apply flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-gray-100 transition-all cursor-pointer;
+}
+
+.user-avatar {
+  @apply w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold;
+}
+
+.user-name-desktop {
+  @apply text-gray-700 font-medium hidden lg:block;
+}
+
+.dropdown-arrow {
+  @apply w-4 h-4 text-gray-600 transition-transform duration-200;
+}
+
+.dropdown-arrow.rotate {
+  @apply rotate-180;
+}
+
+/* Dropdown Menu */
+.profile-dropdown-menu {
+  @apply absolute right-0 mt-2 w-72 bg-white rounded-xl shadow-2xl border border-gray-200 py-2;
+  animation: fadeIn 0.25s ease-out;
+}
+
+/* 🔧 Added working fade-in animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* User Info in Dropdown */
+.dropdown-user-info {
+  @apply px-4 py-3 flex items-start space-x-3;
+}
+
+.dropdown-avatar {
+  @apply w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold text-lg flex-shrink-0;
+}
+
+.dropdown-user-details {
+  @apply flex-1 min-w-0;
+}
+
+.dropdown-username {
+  @apply text-sm font-semibold text-gray-900 truncate;
+}
+
+.dropdown-email {
+  @apply text-xs text-gray-500 truncate block;
+}
+
+.dropdown-phone {
+  @apply text-xs text-gray-400 mt-1 block;
+}
+
+.account-badge {
+  @apply inline-block mt-2 px-2 py-1 text-xs bg-blue-100 text-blue-700 rounded-md;
+}
+
+.dropdown-divider {
+  @apply my-2 border-t border-gray-200;
+}
+
+/* Dropdown Menu Items */
+.dropdown-menu-item {
+  @apply flex items-center px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-100 transition-all cursor-pointer w-full text-left;
+}
+
+.menu-icon {
+  @apply w-5 h-5 mr-3 text-gray-400;
+}
+
+.logout-item {
+  @apply text-red-600 hover:bg-red-50;
+}
+
+.logout-item .menu-icon {
+  @apply text-red-500;
+}
+
+/* Mobile Menu Button */
 .mobile-menu-btn {
-  @apply md:hidden p-2 rounded-lg hover:bg-gray-100 transition-all;
+  @apply md:hidden p-2 rounded-lg hover:bg-gray-100 transition-all text-xl;
 }
 
+/* Mobile Menu */
 .mobile-menu {
-  @apply md:hidden bg-white border-t border-gray-200 flex flex-col px-4 py-3 space-y-3;
+  @apply md:hidden bg-white border-t border-gray-200 flex flex-col px-4 py-3 space-y-2;
 }
 
 .mobile-link {
-  @apply block py-2 text-base font-medium text-gray-700;
+  @apply block py-2 text-base font-medium text-gray-700 hover:text-blue-500 transition-all;
 }
 
 .mobile-link.active {
-  @apply text-blue-500;
+  @apply text-blue-500 font-semibold;
+}
+
+/* Mobile User Section */
+.mobile-user-section {
+  @apply border-t border-gray-200 pt-3 mt-3 space-y-2;
+}
+
+.mobile-user-info {
+  @apply flex items-center space-x-3 mb-3 pb-3 border-b border-gray-200;
+}
+
+.mobile-avatar {
+  @apply w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold;
+}
+
+.mobile-user-details {
+  @apply flex-1 min-w-0;
 }
 
 .mobile-username {
-  @apply pt-2 text-gray-700 font-medium border-t border-gray-200;
+  @apply block text-sm font-semibold text-gray-900 truncate;
+}
+
+.mobile-email {
+  @apply block text-xs text-gray-500 truncate;
+}
+
+.mobile-menu-link {
+  @apply block py-2.5 text-sm font-medium text-gray-700 hover:text-blue-500 transition-all;
 }
 
 .mobile-logout {
-  @apply w-full text-left py-2 text-gray-700 font-medium;
+  @apply w-full text-left py-2.5 text-sm text-red-600 font-medium hover:bg-red-50 rounded-lg transition-all mt-2;
 }
 
 .mobile-signin {
-  @apply block w-full py-2 text-center border-2 border-blue-500 text-blue-500 rounded-lg font-medium;
+  @apply block w-full py-2.5 text-center border-2 border-blue-500 text-blue-500 rounded-lg font-medium hover:bg-blue-50 transition-all;
 }
 
 .mobile-signup {
-  @apply block w-full py-2 text-center bg-blue-500 text-white rounded-lg font-medium;
+  @apply block w-full py-2.5 text-center bg-blue-500 text-white rounded-lg font-medium hover:bg-blue-600 transition-all;
 }

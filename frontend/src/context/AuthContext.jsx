@@ -1,5 +1,4 @@
 import { createContext, useState, useContext, useEffect } from 'react';
-import api from '../api/axios';
 
 const AuthContext = createContext(null);
 
@@ -10,18 +9,13 @@ export const AuthProvider = ({ children }) => {
 
   // Check if user is logged in on mount
   useEffect(() => {
-    const checkAuth = async () => {
-      const token = localStorage.getItem('authToken');
-      if (token) {
-        try {
-          // Verify token with backend
-          const response = await api.get('/auth/verify');
-          setUser(response.data.user);
-          setIsAuthenticated(true);
-        } catch (error) {
-          console.error('Auth verification failed:', error);
-          localStorage.removeItem('authToken');
-        }
+    const checkAuth = () => {
+      const storedUser = localStorage.getItem('user');
+      const authStatus = localStorage.getItem('isAuthenticated');
+
+      if (authStatus === 'true' && storedUser) {
+        setUser(JSON.parse(storedUser));
+        setIsAuthenticated(true);
       }
       setLoading(false);
     };
@@ -31,42 +25,52 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
     try {
-      const response = await api.post('/auth/login', { email, password });
-      const { token, user } = response.data;
-      
-      localStorage.setItem('authToken', token);
-      setUser(user);
+      // Simulate successful login
+      const userData = {
+        name: 'Test User',
+        email,
+        loginMethod: 'email',
+      };
+
+      localStorage.setItem('user', JSON.stringify(userData));
+      localStorage.setItem('isAuthenticated', 'true');
+
+      setUser(userData);
       setIsAuthenticated(true);
+
       return { success: true };
     } catch (error) {
       console.error('Login error:', error);
-      return { 
-        success: false, 
-        message: error.response?.data?.message || 'Login failed' 
-      };
+      return { success: false, message: 'Login failed' };
     }
   };
 
   const register = async (userData) => {
     try {
-      const response = await api.post('/auth/register', userData);
-      const { token, user } = response.data;
-      
-      localStorage.setItem('authToken', token);
-      setUser(user);
+      // Simulate registration
+      const newUser = {
+        name: userData.name,
+        email: userData.email,
+        phone: userData.phone || '',
+        loginMethod: userData.type === 'google' ? 'google' : 'email',
+      };
+
+      localStorage.setItem('user', JSON.stringify(newUser));
+      localStorage.setItem('isAuthenticated', 'true');
+
+      setUser(newUser);
       setIsAuthenticated(true);
+
       return { success: true };
     } catch (error) {
       console.error('Registration error:', error);
-      return { 
-        success: false, 
-        message: error.response?.data?.message || 'Registration failed' 
-      };
+      return { success: false, message: 'Registration failed' };
     }
   };
 
   const logout = () => {
-    localStorage.removeItem('authToken');
+    localStorage.removeItem('user');
+    localStorage.removeItem('isAuthenticated');
     setUser(null);
     setIsAuthenticated(false);
   };
