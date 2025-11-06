@@ -24,18 +24,18 @@ const CategoryList = ({ selectedCategory, onSelectCategory }) => {
           Explore Categories
         </h2>
 
-        <div className="flex flex-wrap gap-2 justify-center">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
           {allCategories.map((category) => (
             <button
               key={category}
               onClick={() => onSelectCategory(category)}
-              className={`px-4 py-2 rounded-full transition-all ${
+              className={`p-4 rounded-lg text-center transition-all shadow-sm hover:shadow-md ${
                 selectedCategory === category
                   ? 'bg-blue-500 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  : 'bg-white text-gray-700 hover:bg-gray-100'
               }`}
             >
-              <span className="mr-1">{categoryIcons[category] || '📚'}</span>
+              <span className="text-2xl mb-2 block">{categoryIcons[category] || '📚'}</span>
               <span className="font-medium">{category}</span>
             </button>
           ))}
