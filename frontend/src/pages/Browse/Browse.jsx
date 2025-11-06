@@ -1,13 +1,36 @@
 import { useState, useEffect } from 'react';
-import { useBooks } from '../../context/Bookcontext';
 import BookCard from '../../components/BookDetails/Bookcard';
 import CategoryList from '../../components/BookDetails/CategoryList';
 
 const Browse = () => {
-  const { books, loading } = useBooks();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [filteredBooks, setFilteredBooks] = useState([]);
+
+  // Sample books data (same as Home page)
+  const books = [
+    {
+      id: 1,
+      title: 'The Great Adventure',
+      author: 'John Smith',
+      category: 'Fiction',
+      image:
+        'https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=400&h=600&fit=crop',
+      description: 'An epic tale of courage and discovery.',
+      type: 'Free',
+    },
+    {
+      id: 2,
+      title: 'Love in Paris',
+      author: 'Emma Wilson',
+      category: 'Romance',
+      image:
+        'https://images.unsplash.com/photo-1512820790803-83ca734da794?w=400&h=600&fit=crop',
+      description: 'A heartwarming romance set in the city of lights.',
+      type: 'Paid',
+      price: 500,
+    },
+  ];
 
   useEffect(() => {
     let result = books;
@@ -26,7 +49,7 @@ const Browse = () => {
     }
     
     setFilteredBooks(result);
-  }, [books, searchTerm, selectedCategory]);
+  }, [searchTerm, selectedCategory]); // Removed books dependency since it's now static
 
   return (
     <div>
@@ -59,12 +82,7 @@ const Browse = () => {
 
       {/* Books Grid */}
       <div className="max-w-7xl mx-auto px-4 py-12">
-        {loading ? (
-          <div className="text-center py-12">
-            <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-blue-500 border-t-transparent"></div>
-            <p className="mt-4 text-gray-600 text-lg">Loading books...</p>
-          </div>
-        ) : filteredBooks.length > 0 ? (
+        {filteredBooks.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {filteredBooks.map((book) => (
               <BookCard key={book._id} book={book} />

@@ -27,6 +27,11 @@ export const BookProvider = ({ children }) => {
     }
   };
 
+  // Fetch books when component mounts
+  useEffect(() => {
+    fetchBooks();
+  }, []); // Empty dependency array means this runs once when component mounts
+
   // Add a new book
   const addBook = async (bookData) => {
     try {
