@@ -1,0 +1,106 @@
+/* Navbar.css */
+
+/* Navbar Container */
+.navbar {
+  @apply bg-white shadow-md sticky top-0 z-50;
+}
+
+.navbar-container {
+  @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-16;
+}
+
+/* Logo */
+.navbar-logo {
+  @apply flex items-center space-x-2;
+}
+
+.logo-circle {
+  @apply w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center;
+}
+
+.logo-text {
+  @apply text-white font-bold text-xl;
+}
+
+.logo-name {
+  @apply text-2xl font-bold text-blue-500;
+}
+
+/* Nav Links */
+.nav-links {
+  @apply hidden md:flex items-center space-x-8;
+}
+
+.nav-link {
+  @apply text-base font-medium text-gray-700 hover:text-blue-500 transition-all duration-200;
+}
+
+.nav-link.active {
+  @apply text-blue-500 border-b-2 border-blue-500;
+}
+
+/* Auth Section */
+.auth-section {
+  @apply hidden md:flex items-center space-x-4;
+}
+
+.user-info {
+  @apply flex items-center space-x-2;
+}
+
+.user-icon {
+  @apply w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center;
+}
+
+.user-icon span {
+  @apply text-blue-500 font-semibold text-sm;
+}
+
+.user-name {
+  @apply text-gray-700 font-medium;
+}
+
+.logout-btn {
+  @apply px-4 py-2 text-gray-700 hover:text-blue-500 font-medium transition-all duration-200;
+}
+
+.signin-btn {
+  @apply px-4 py-2 text-gray-700 hover:text-blue-500 font-medium;
+}
+
+.signup-btn {
+  @apply bg-blue-500 text-white px-4 py-2 rounded-lg font-medium;
+}
+
+/* Mobile */
+.mobile-menu-btn {
+  @apply md:hidden p-2 rounded-lg hover:bg-gray-100 transition-all;
+}
+
+.mobile-menu {
+  @apply md:hidden bg-white border-t border-gray-200 flex flex-col px-4 py-3 space-y-3;
+}
+
+.mobile-link {
+  @apply block py-2 text-base font-medium text-gray-700;
+}
+
+.mobile-link.active {
+  @apply text-blue-500;
+}
+
+.mobile-username {
+  @apply pt-2 text-gray-700 font-medium border-t border-gray-200;
+}
+
+.mobile-logout {
+  @apply w-full text-left py-2 text-gray-700 font-medium;
+}
+
+.mobile-signin {
+  @apply block w-full py-2 text-center border-2 border-blue-500 text-blue-500 rounded-lg font-medium;
+}
+
+.mobile-signup {
+  @apply block w-full py-2 text-center bg-blue-500 text-white rounded-lg font-medium;
+}

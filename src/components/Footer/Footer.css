@@ -1,0 +1,75 @@
+/* Footer.css */
+
+/* Footer Base */
+.footer {
+  @apply bg-gray-900 text-white;
+}
+
+.footer-container {
+  @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12;
+}
+
+.footer-grid {
+  @apply grid grid-cols-1 md:grid-cols-3 gap-8;
+}
+
+/* Logo */
+.footer-logo {
+  @apply flex items-center space-x-2 mb-4;
+}
+
+.footer-logo-circle {
+  @apply w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center;
+}
+
+.footer-logo-text {
+  @apply text-white font-bold text-xl;
+}
+
+.footer-logo-name {
+  @apply text-2xl font-bold text-blue-500;
+}
+
+.footer-description {
+  @apply text-gray-400 text-sm leading-relaxed;
+}
+
+/* Social Icons */
+.footer-socials {
+  @apply flex space-x-4 mt-6;
+}
+
+.social-link {
+  @apply w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-blue-500 transition-all duration-300;
+}
+
+.icon {
+  @apply w-5 h-5;
+}
+
+/* Links Section */
+.footer-heading {
+  @apply text-lg font-semibold mb-4;
+}
+
+.footer-links {
+  @apply space-y-3;
+}
+
+.footer-link {
+  @apply text-gray-400 hover:text-blue-500 text-sm transition-all duration-200;
+}
+
+/* Contact Section */
+.footer-contact {
+  @apply flex items-start space-x-3 text-gray-400 text-sm;
+}
+
+.footer-icon {
+  @apply text-blue-500 text-base;
+}
+
+/* Bottom */
+.footer-bottom {
+  @apply mt-10 border-t border-gray-700 pt-6 text-center text-gray-500 text-sm;
+}
