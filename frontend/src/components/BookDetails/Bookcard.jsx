@@ -1,7 +1,33 @@
 import { useState } from 'react';
+import { useBooks } from '../../context/Bookcontext';
 
 const BookCard = ({ book }) => {
   const [showModal, setShowModal] = useState(false);
+  const { borrowBook, buyBook } = useBooks();
+  const [actionMessage, setActionMessage] = useState('');
+  const [actionError, setActionError] = useState('');
+
+  const handleBorrow = async () => {
+    setActionError('');
+    const res = await borrowBook(book.id);
+    if (!res.success) {
+      setActionError(res.message);
+    } else {
+      setActionMessage(res.message);
+    }
+  };
+
+  const handleBuy = async () => {
+    setActionError('');
+    const res = await buyBook(book.id);
+    if (!res.success) {
+      setActionError(res.message);
+    } else {
+      setActionMessage(res.message);
+    }
+  };
+
+  const displayType = book.type === 'Paid' || book.type === 'PAID' ? 'Paid' : 'Free';
 
   return (
     <>
@@ -10,7 +36,7 @@ const BookCard = ({ book }) => {
         className="cursor-pointer bg-white rounded-xl shadow hover:shadow-lg transition overflow-hidden"
       >
         <img
-          src={book.image}
+          src={book.image || book.imageUrl}
           alt={book.title}
           className="h-64 w-full object-cover"
         />
@@ -39,13 +65,15 @@ const BookCard = ({ book }) => {
             />
             <h2 className="text-2xl font-bold mb-2">{book.title}</h2>
             <p className="text-gray-600 mb-4">{book.description}</p>
+            {actionError && <p className="text-red-600 mb-3 text-sm">{actionError}</p>}
+            {actionMessage && <p className="text-green-600 mb-3 text-sm">{actionMessage}</p>}
             <div className="flex justify-end gap-2">
-              {book.type === 'Free' ? (
-                <button className="bg-blue-500 text-white px-4 py-2 rounded">
+              {displayType === 'Free' ? (
+                <button onClick={handleBorrow} className="bg-blue-500 text-white px-4 py-2 rounded">
                   Borrow
                 </button>
               ) : (
-                <button className="bg-green-500 text-white px-4 py-2 rounded">
+                <button onClick={handleBuy} className="bg-green-500 text-white px-4 py-2 rounded">
                   Buy Rs. {book.price}
                 </button>
               )}

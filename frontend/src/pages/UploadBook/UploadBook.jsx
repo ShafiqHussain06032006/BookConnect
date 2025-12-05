@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useBooks } from '../../context/Bookcontext';
 import { useAuth } from '../../context/AuthContext';
@@ -21,10 +21,11 @@ const UploadBook = () => {
   const [error, setError] = useState('');
 
   // Redirect if not authenticated
-  if (!isAuthenticated) {
-    navigate('/login');
-    return null;
-  }
+  useEffect(() => {
+    if (!isAuthenticated) {
+      navigate('/login');
+    }
+  }, [isAuthenticated, navigate]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -78,9 +79,9 @@ const UploadBook = () => {
     uploadData.append('author', formData.author);
     uploadData.append('description', formData.description);
     uploadData.append('category', formData.category);
-    uploadData.append('type', formData.type);
+    uploadData.append('type', formData.type === 'Paid' ? 'PAID' : 'FREE');
     if (formData.type === 'Paid') {
-      uploadData.append('price', formData.price);
+      uploadData.append('price', Number(formData.price));
     }
     if (formData.image) {
       uploadData.append('image', formData.image);

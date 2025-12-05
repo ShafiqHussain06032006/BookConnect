@@ -53,7 +53,6 @@ const Register = () => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const phoneRegex = /^\+?[1-9]\d{9,11}$/;
 
-    // Validation
     if (!formData.name || !formData.email || !formData.password || !formData.confirmPassword) {
       setError('Please fill in all required fields');
       return;
@@ -80,23 +79,20 @@ const Register = () => {
     }
 
     setLoading(true);
-    
-    // Temporary: Simulate registration success
-    setTimeout(() => {
-      // Store user data temporarily in localStorage
-      const tempUser = {
-        name: formData.name,
-        email: formData.email,
-        phone: formData.phone,
-        loginMethod: 'email'
-      };
-      
-      localStorage.setItem('user', JSON.stringify(tempUser));
-      localStorage.setItem('isAuthenticated', 'true');
-      
-      setLoading(false);
-      navigate('/');
-    }, 1000);
+    const result = await register({
+      name: formData.name,
+      email: formData.email,
+      password: formData.password,
+      phone: formData.phone,
+    });
+    setLoading(false);
+
+    if (!result.success) {
+      setError(result.message || 'Registration failed');
+      return;
+    }
+
+    navigate('/');
   };
 
   return (

@@ -1,4 +1,5 @@
 import { createContext, useState, useContext, useEffect } from 'react';
+import api from '../api/axios';
 
 const AuthContext = createContext(null);
 
@@ -9,68 +10,91 @@ export const AuthProvider = ({ children }) => {
 
   // Check if user is logged in on mount
   useEffect(() => {
-    const checkAuth = () => {
-      const storedUser = localStorage.getItem('user');
-      const authStatus = localStorage.getItem('isAuthenticated');
-
-      if (authStatus === 'true' && storedUser) {
-        setUser(JSON.parse(storedUser));
-        setIsAuthenticated(true);
+    const loadUser = async () => {
+      const token = localStorage.getItem('authToken');
+      if (!token) {
+        setLoading(false);
+        return;
       }
-      setLoading(false);
+
+      try {
+        const { data } = await api.get('/auth/me');
+        if (data?.data) {
+          const normalizedUser = {
+            ...data.data,
+            loginMethod: data.data.provider === 'GOOGLE' ? 'google' : 'email',
+          };
+          setUser(normalizedUser);
+          setIsAuthenticated(true);
+        }
+      } catch (err) {
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('user');
+      } finally {
+        setLoading(false);
+      }
     };
 
-    checkAuth();
+    loadUser();
   }, []);
 
   const login = async (email, password) => {
     try {
-      // Simulate successful login
-      const userData = {
-        name: 'Test User',
-        email,
-        loginMethod: 'email',
+      const { data } = await api.post('/auth/login', { email, password });
+      const token = data?.data?.token;
+      const userData = data?.data?.user;
+
+      if (!token || !userData) throw new Error('Invalid login response');
+
+      const normalizedUser = {
+        ...userData,
+        loginMethod: userData.provider === 'GOOGLE' ? 'google' : 'email',
       };
 
-      localStorage.setItem('user', JSON.stringify(userData));
-      localStorage.setItem('isAuthenticated', 'true');
+      localStorage.setItem('authToken', token);
+      localStorage.setItem('user', JSON.stringify(normalizedUser));
 
-      setUser(userData);
+      setUser(normalizedUser);
       setIsAuthenticated(true);
 
       return { success: true };
     } catch (error) {
-      console.error('Login error:', error);
-      return { success: false, message: 'Login failed' };
+      const message =
+        error?.response?.data?.message || error?.response?.data?.error || 'Login failed';
+      return { success: false, message };
     }
   };
 
   const register = async (userData) => {
     try {
-      // Simulate registration
-      const newUser = {
-        name: userData.name,
-        email: userData.email,
-        phone: userData.phone || '',
-        loginMethod: userData.type === 'google' ? 'google' : 'email',
+      const { data } = await api.post('/auth/register', userData);
+      const token = data?.data?.token;
+      const newUser = data?.data?.user;
+
+      if (!token || !newUser) throw new Error('Invalid registration response');
+
+      const normalizedUser = {
+        ...newUser,
+        loginMethod: newUser.provider === 'GOOGLE' ? 'google' : 'email',
       };
 
-      localStorage.setItem('user', JSON.stringify(newUser));
-      localStorage.setItem('isAuthenticated', 'true');
+      localStorage.setItem('authToken', token);
+      localStorage.setItem('user', JSON.stringify(normalizedUser));
 
-      setUser(newUser);
+      setUser(normalizedUser);
       setIsAuthenticated(true);
 
       return { success: true };
     } catch (error) {
-      console.error('Registration error:', error);
-      return { success: false, message: 'Registration failed' };
+      const message =
+        error?.response?.data?.message || error?.response?.data?.error || 'Registration failed';
+      return { success: false, message };
     }
   };
 
   const logout = () => {
     localStorage.removeItem('user');
-    localStorage.removeItem('isAuthenticated');
+    localStorage.removeItem('authToken');
     setUser(null);
     setIsAuthenticated(false);
   };

@@ -1,4 +1,4 @@
-const CategoryList = ({ selectedCategory, onSelectCategory }) => {
+const CategoryList = ({ selectedCategory, onSelectCategory, categories: categoriesProp }) => {
   const categoryIcons = {
     Fiction: '📖',
     Romance: '💕',
@@ -7,7 +7,7 @@ const CategoryList = ({ selectedCategory, onSelectCategory }) => {
     Fantasy: '🐉',
   };
 
-  const categories = [
+  const categories = categoriesProp && categoriesProp.length ? categoriesProp : [
     'Fiction',
     'Romance',
     'Mystery / Thriller',

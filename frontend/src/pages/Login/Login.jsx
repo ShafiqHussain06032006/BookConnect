@@ -37,7 +37,6 @@ const Login = () => {
     e.preventDefault();
     setError('');
 
-    // Validation
     if (!formData.email || !formData.password) {
       setError('Please fill in all fields');
       return;
@@ -50,21 +49,15 @@ const Login = () => {
     }
 
     setLoading(true);
+    const result = await login(formData.email, formData.password);
+    setLoading(false);
 
-    // Temporary: Simulate login success
-    setTimeout(() => {
-      const tempUser = {
-        name: 'Test User',
-        email: formData.email,
-        loginMethod: 'email'
-      };
-      
-      localStorage.setItem('user', JSON.stringify(tempUser));
-      localStorage.setItem('isAuthenticated', 'true');
-      
-      setLoading(false);
-      navigate('/');
-    }, 1000);
+    if (!result.success) {
+      setError(result.message || 'Login failed');
+      return;
+    }
+
+    navigate('/');
   };
 
   return (

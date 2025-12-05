@@ -1,55 +1,19 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import BookCard from '../../components/BookDetails/Bookcard';
 import CategoryList from '../../components/BookDetails/CategoryList';
+import { useBooks } from '../../context/Bookcontext';
 
 const Browse = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
-  const [filteredBooks, setFilteredBooks] = useState([]);
-
-  // Sample books data (same as Home page)
-  const books = [
-    {
-      id: 1,
-      title: 'The Great Adventure',
-      author: 'John Smith',
-      category: 'Fiction',
-      image:
-        'https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=400&h=600&fit=crop',
-      description: 'An epic tale of courage and discovery.',
-      type: 'Free',
-    },
-    {
-      id: 2,
-      title: 'Love in Paris',
-      author: 'Emma Wilson',
-      category: 'Romance',
-      image:
-        'https://images.unsplash.com/photo-1512820790803-83ca734da794?w=400&h=600&fit=crop',
-      description: 'A heartwarming romance set in the city of lights.',
-      type: 'Paid',
-      price: 500,
-    },
-  ];
+  const { books, loading, fetchBooks, categories } = useBooks();
 
   useEffect(() => {
-    let result = books;
-    
-    // Apply search filter
-    if (searchTerm) {
-      result = result.filter(book => 
-        book.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        book.author.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
-    
-    // Apply category filter
-    if (selectedCategory !== 'All') {
-      result = result.filter(book => book.category === selectedCategory);
-    }
-    
-    setFilteredBooks(result);
-  }, [searchTerm, selectedCategory]); // Removed books dependency since it's now static
+    const params = {};
+    if (searchTerm) params.q = searchTerm;
+    if (selectedCategory !== 'All') params.category = selectedCategory;
+    fetchBooks(params);
+  }, [searchTerm, selectedCategory]);
 
   return (
     <div>
@@ -78,14 +42,19 @@ const Browse = () => {
       <CategoryList 
         selectedCategory={selectedCategory} 
         onSelectCategory={setSelectedCategory}
+        categories={categories}
       />
 
       {/* Books Grid */}
       <div className="max-w-7xl mx-auto px-4 py-12">
-        {filteredBooks.length > 0 ? (
+        {loading ? (
+          <div className="text-center py-12 bg-gray-50 rounded-lg">
+            <p className="text-gray-500 text-xl">Loading books...</p>
+          </div>
+        ) : books.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredBooks.map((book) => (
-              <BookCard key={book._id} book={book} />
+            {books.map((book) => (
+              <BookCard key={book.id} book={book} />
             ))}
           </div>
         ) : (
