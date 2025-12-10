@@ -13,6 +13,7 @@ import java.util.UUID;
  * 
  * Design Pattern: Entity (JPA)
  * Tracks when users borrow FREE books and when they return them.
+ * Now includes borrower contact details for owner communication.
  */
 @Entity
 @Table(name = "borrows", indexes = {
@@ -38,6 +39,27 @@ public class Borrow {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    // Borrower contact details
+    @Column(nullable = false)
+    private String borrowerName;
+
+    @Column(nullable = false, length = 20)
+    private String borrowerPhone;
+
+    @Column(nullable = false)
+    private String borrowerCity;
+
+    @Column(nullable = false)
+    private String borrowerAddress;
+
+    @Column(columnDefinition = "TEXT")
+    private String messageToOwner;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    @Builder.Default
+    private BorrowStatus status = BorrowStatus.PENDING;
 
     @CreatedDate
     @Column(nullable = false, updatable = false)

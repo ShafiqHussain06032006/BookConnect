@@ -1,6 +1,8 @@
 package com.bookconnect.service.impl;
 
+import com.bookconnect.dto.request.BorrowBuyRequest;
 import com.bookconnect.dto.request.CreateBookRequest;
+import com.bookconnect.dto.request.UpdateBookRequest;
 import com.bookconnect.dto.response.BookResponse;
 import com.bookconnect.dto.response.BooksPageResponse;
 import com.bookconnect.exception.BusinessException;
@@ -118,7 +120,7 @@ public class BookServiceImpl implements BookService {
 
     @Override
     @Transactional
-    public void borrowBook(UUID bookId, User user) {
+    public void borrowBook(UUID bookId, BorrowBuyRequest request, User user) {
         Book book = bookRepository.findById(bookId)
                 .orElseThrow(() -> new ResourceNotFoundException("Book", "id", bookId));
 
@@ -130,10 +132,16 @@ public class BookServiceImpl implements BookService {
             throw new BusinessException("Book is currently not available");
         }
 
-        // Create borrow record
+        // Create borrow record with contact details
         Borrow borrow = Borrow.builder()
                 .book(book)
                 .user(user)
+                .borrowerName(request.getFullName())
+                .borrowerPhone(request.getPhone())
+                .borrowerCity(request.getCity())
+                .borrowerAddress(request.getAddress())
+                .messageToOwner(request.getMessageToOwner())
+                .status(BorrowStatus.PENDING)
                 .build();
 
         borrowRepository.save(borrow);
@@ -141,7 +149,7 @@ public class BookServiceImpl implements BookService {
 
     @Override
     @Transactional
-    public void buyBook(UUID bookId, User user) {
+    public void buyBook(UUID bookId, BorrowBuyRequest request, User user) {
         Book book = bookRepository.findById(bookId)
                 .orElseThrow(() -> new ResourceNotFoundException("Book", "id", bookId));
 
@@ -153,14 +161,77 @@ public class BookServiceImpl implements BookService {
             throw new BusinessException("Book price is not set");
         }
 
-        // Create purchase record (simplified - no payment integration yet)
+        // Create purchase record with contact details
         Purchase purchase = Purchase.builder()
                 .book(book)
                 .user(user)
                 .amount(book.getPrice())
-                .status("COMPLETED")
+                .buyerName(request.getFullName())
+                .buyerPhone(request.getPhone())
+                .buyerCity(request.getCity())
+                .buyerAddress(request.getAddress())
+                .messageToOwner(request.getMessageToOwner())
+                .status("PENDING")
                 .build();
 
         purchaseRepository.save(purchase);
+    }
+
+    @Override
+    @Transactional
+    public BookResponse updateBook(UUID bookId, UpdateBookRequest request, MultipartFile image, User user) {
+        Book book = bookRepository.findById(bookId)
+                .orElseThrow(() -> new ResourceNotFoundException("Book", "id", bookId));
+
+        // Check if user is the owner
+        if (!book.getUploader().getId().equals(user.getId())) {
+            throw new BusinessException("You can only edit your own books");
+        }
+
+        // Update book fields
+        book.setTitle(request.getTitle());
+        book.setAuthor(request.getAuthor());
+        book.setDescription(request.getDescription());
+        book.setCategory(BookCategory.fromDisplayName(request.getCategory()));
+        book.setType(BookType.valueOf(request.getType().toUpperCase()));
+        book.setPrice(request.getPrice());
+        book.setIsbn(request.getIsbn());
+        book.setLanguage(request.getLanguage());
+        book.setPages(request.getPages());
+        
+        if (request.getAvailable() != null) {
+            book.setAvailable(request.getAvailable());
+        }
+
+        // Update image if provided
+        if (image != null && !image.isEmpty()) {
+            String imageUrl = fileStorageService.storeFile(image, "books");
+            book.setImageUrl(imageUrl);
+        }
+
+        Book updatedBook = bookRepository.save(book);
+        return bookMapper.toResponse(updatedBook);
+    }
+
+    @Override
+    @Transactional
+    public void deleteBook(UUID bookId, User user) {
+        Book book = bookRepository.findById(bookId)
+                .orElseThrow(() -> new ResourceNotFoundException("Book", "id", bookId));
+
+        // Check if user is the owner
+        if (!book.getUploader().getId().equals(user.getId())) {
+            throw new BusinessException("You can only delete your own books");
+        }
+
+        bookRepository.delete(book);
+    }
+
+    @Override
+    public List<BookResponse> getBooksByUploader(User uploader) {
+        List<Book> books = bookRepository.findByUploaderOrderByCreatedAtDesc(uploader);
+        return books.stream()
+                .map(bookMapper::toResponse)
+                .collect(Collectors.toList());
     }
 }

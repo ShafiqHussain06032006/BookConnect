@@ -13,8 +13,7 @@ import java.util.UUID;
  * Purchase entity representing book purchase transactions.
  * 
  * Design Pattern: Entity (JPA)
- * Tracks purchases of PAID books. Payment integration is not implemented yet;
- * this serves as a simple order record.
+ * Tracks purchases of PAID books with buyer contact details.
  */
 @Entity
 @Table(name = "purchases", indexes = {
@@ -44,9 +43,25 @@ public class Purchase {
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal amount;
 
+    // Buyer contact details
+    @Column(nullable = false)
+    private String buyerName;
+
+    @Column(nullable = false, length = 20)
+    private String buyerPhone;
+
+    @Column(nullable = false)
+    private String buyerCity;
+
+    @Column(nullable = false)
+    private String buyerAddress;
+
+    @Column(columnDefinition = "TEXT")
+    private String messageToOwner;
+
     @Column(nullable = false)
     @Builder.Default
-    private String status = "COMPLETED";
+    private String status = "PENDING";
 
     @CreatedDate
     @Column(nullable = false, updatable = false)

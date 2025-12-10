@@ -2,6 +2,7 @@ package com.bookconnect.repository;
 
 import com.bookconnect.model.Book;
 import com.bookconnect.model.BookCategory;
+import com.bookconnect.model.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
@@ -10,6 +11,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -24,6 +27,10 @@ public interface BookRepository extends JpaRepository<Book, UUID> {
     @Override
     @EntityGraph(attributePaths = "uploader")
     Page<Book> findAll(Pageable pageable);
+
+    @Override
+    @EntityGraph(attributePaths = "uploader")
+    Optional<Book> findById(UUID id);
 
     @EntityGraph(attributePaths = "uploader")
     Page<Book> findByCategory(BookCategory category, Pageable pageable);
@@ -41,4 +48,11 @@ public interface BookRepository extends JpaRepository<Book, UUID> {
     Page<Book> searchBooksByCategory(@Param("search") String search,
                                        @Param("category") BookCategory category,
                                        Pageable pageable);
+
+    // Find books uploaded by a specific user
+    @EntityGraph(attributePaths = "uploader")
+    List<Book> findByUploaderOrderByCreatedAtDesc(User uploader);
+
+    // Count books uploaded by a user
+    long countByUploader(User uploader);
 }

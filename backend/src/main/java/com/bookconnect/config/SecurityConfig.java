@@ -57,7 +57,12 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/books", "/api/books/{id}", "/api/books/categories").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/books", "/api/books/**/borrow", "/api/books/**/buy").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/books/my-books").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/api/books").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/api/books/{id}/borrow", "/api/books/{id}/buy").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/api/books/{id}").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/api/books/{id}").authenticated()
+                        .requestMatchers("/api/dashboard/**").authenticated()
                         .requestMatchers("/uploads/**").permitAll()
                         .requestMatchers("/error").permitAll()
                         .anyRequest().authenticated()

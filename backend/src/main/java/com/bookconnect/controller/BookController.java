@@ -1,6 +1,8 @@
 package com.bookconnect.controller;
 
+import com.bookconnect.dto.request.BorrowBuyRequest;
 import com.bookconnect.dto.request.CreateBookRequest;
+import com.bookconnect.dto.request.UpdateBookRequest;
 import com.bookconnect.dto.response.ApiResponse;
 import com.bookconnect.dto.response.BookResponse;
 import com.bookconnect.dto.response.BooksPageResponse;
@@ -65,19 +67,49 @@ public class BookController {
     @PostMapping("/{id}/borrow")
     public ResponseEntity<ApiResponse<String>> borrowBook(
             @PathVariable UUID id,
+            @Valid @RequestBody BorrowBuyRequest request,
             @AuthenticationPrincipal User user) {
 
-        bookService.borrowBook(id, user);
-        return ResponseEntity.ok(ApiResponse.success("Book borrowed successfully", null));
+        bookService.borrowBook(id, request, user);
+        return ResponseEntity.ok(ApiResponse.success("Borrow request submitted successfully", null));
     }
 
     @PostMapping("/{id}/buy")
     public ResponseEntity<ApiResponse<String>> buyBook(
             @PathVariable UUID id,
+            @Valid @RequestBody BorrowBuyRequest request,
             @AuthenticationPrincipal User user) {
 
-        bookService.buyBook(id, user);
-        return ResponseEntity.ok(ApiResponse.success("Book purchased successfully", null));
+        bookService.buyBook(id, request, user);
+        return ResponseEntity.ok(ApiResponse.success("Purchase request submitted successfully", null));
+    }
+
+    @PutMapping(value = "/{id}", consumes = {"multipart/form-data"})
+    public ResponseEntity<ApiResponse<BookResponse>> updateBook(
+            @PathVariable UUID id,
+            @Valid @ModelAttribute UpdateBookRequest request,
+            @RequestParam(value = "image", required = false) MultipartFile image,
+            @AuthenticationPrincipal User user) {
+
+        BookResponse response = bookService.updateBook(id, request, image, user);
+        return ResponseEntity.ok(ApiResponse.success("Book updated successfully", response));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ApiResponse<Void>> deleteBook(
+            @PathVariable UUID id,
+            @AuthenticationPrincipal User user) {
+
+        bookService.deleteBook(id, user);
+        return ResponseEntity.ok(ApiResponse.success("Book deleted successfully", null));
+    }
+
+    @GetMapping("/my-books")
+    public ResponseEntity<ApiResponse<List<BookResponse>>> getMyBooks(
+            @AuthenticationPrincipal User user) {
+
+        List<BookResponse> books = bookService.getBooksByUploader(user);
+        return ResponseEntity.ok(ApiResponse.success(books));
     }
 
     @GetMapping("/categories")
