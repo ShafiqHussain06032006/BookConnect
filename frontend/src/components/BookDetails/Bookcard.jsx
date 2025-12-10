@@ -1,29 +1,37 @@
 import { useState } from 'react';
 import { useBooks } from '../../context/Bookcontext';
+import BorrowFormModal from '../BorrowFormModal';
 
 const BookCard = ({ book }) => {
   const [showModal, setShowModal] = useState(false);
+  const [showBorrowModal, setShowBorrowModal] = useState(false);
   const { borrowBook, buyBook } = useBooks();
   const [actionMessage, setActionMessage] = useState('');
   const [actionError, setActionError] = useState('');
 
-  const handleBorrow = async () => {
+  const handleBorrowSubmit = async (bookId, formData) => {
     setActionError('');
-    const res = await borrowBook(book.id);
+    const res = await borrowBook(bookId, formData);
     if (!res.success) {
       setActionError(res.message);
+      return res;
     } else {
       setActionMessage(res.message);
+      setShowModal(false);
+      return res;
     }
   };
 
-  const handleBuy = async () => {
+  const handleBuySubmit = async (bookId, formData) => {
     setActionError('');
-    const res = await buyBook(book.id);
+    const res = await buyBook(bookId, formData);
     if (!res.success) {
       setActionError(res.message);
+      return res;
     } else {
       setActionMessage(res.message);
+      setShowModal(false);
+      return res;
     }
   };
 
@@ -59,21 +67,28 @@ const BookCard = ({ book }) => {
               ✕
             </button>
             <img
-              src={book.image}
+              src={book.image || book.imageUrl}
               alt={book.title}
-              className="rounded-lg mb-4"
+              className="rounded-lg mb-4 w-full h-48 object-cover"
             />
             <h2 className="text-2xl font-bold mb-2">{book.title}</h2>
+            <p className="text-gray-500 text-sm mb-1">by {book.author}</p>
             <p className="text-gray-600 mb-4">{book.description}</p>
             {actionError && <p className="text-red-600 mb-3 text-sm">{actionError}</p>}
             {actionMessage && <p className="text-green-600 mb-3 text-sm">{actionMessage}</p>}
             <div className="flex justify-end gap-2">
               {displayType === 'Free' ? (
-                <button onClick={handleBorrow} className="bg-blue-500 text-white px-4 py-2 rounded">
+                <button 
+                  onClick={() => setShowBorrowModal(true)} 
+                  className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition"
+                >
                   Borrow
                 </button>
               ) : (
-                <button onClick={handleBuy} className="bg-green-500 text-white px-4 py-2 rounded">
+                <button 
+                  onClick={() => setShowBorrowModal(true)} 
+                  className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition"
+                >
                   Buy Rs. {book.price}
                 </button>
               )}
@@ -81,6 +96,15 @@ const BookCard = ({ book }) => {
           </div>
         </div>
       )}
+
+      {/* Borrow/Buy Form Modal */}
+      <BorrowFormModal
+        book={book}
+        isOpen={showBorrowModal}
+        onClose={() => setShowBorrowModal(false)}
+        onSubmit={displayType === 'Free' ? handleBorrowSubmit : handleBuySubmit}
+        type={displayType === 'Free' ? 'borrow' : 'buy'}
+      />
     </>
   );
 };

@@ -5,6 +5,7 @@ export const BookContext = createContext(null);
 
 export const BookProvider = ({ children }) => {
   const [books, setBooks] = useState([]);
+  const [myBooks, setMyBooks] = useState([]);
   const [loading, setLoading] = useState(false);
   const [categories, setCategories] = useState([
     'Fiction',
@@ -71,6 +72,48 @@ export const BookProvider = ({ children }) => {
     }
   };
 
+  // Fetch my uploaded books
+  const fetchMyBooks = async () => {
+    try {
+      const response = await api.get('/books/my-books');
+      const incoming = response?.data?.data || [];
+      setMyBooks(incoming.map(normalizeBook));
+      return { success: true };
+    } catch (error) {
+      console.error('Error fetching my books:', error);
+      return { success: false, message: 'Failed to fetch your books' };
+    }
+  };
+
+  // Update a book
+  const updateBook = async (bookId, bookData) => {
+    try {
+      const response = await api.put(`/books/${bookId}`, bookData);
+      const updated = normalizeBook(response?.data?.data);
+      if (updated) {
+        setMyBooks(myBooks.map(b => b.id === bookId ? updated : b));
+        setBooks(books.map(b => b.id === bookId ? updated : b));
+      }
+      return true;
+    } catch (error) {
+      console.error('Error updating book:', error);
+      return false;
+    }
+  };
+
+  // Delete a book
+  const deleteBook = async (bookId) => {
+    try {
+      await api.delete(`/books/${bookId}`);
+      setMyBooks(myBooks.filter(b => b.id !== bookId));
+      setBooks(books.filter(b => b.id !== bookId));
+      return true;
+    } catch (error) {
+      console.error('Error deleting book:', error);
+      return false;
+    }
+  };
+
   // Get book by ID
   const getBookById = async (bookId) => {
     try {
@@ -84,9 +127,9 @@ export const BookProvider = ({ children }) => {
   };
 
   // Borrow a book
-  const borrowBook = async (bookId) => {
+  const borrowBook = async (bookId, formData) => {
     try {
-      const response = await api.post(`/books/${bookId}/borrow`);
+      const response = await api.post(`/books/${bookId}/borrow`, formData);
       return { success: true, message: response?.data?.message || 'Book borrowed successfully' };
     } catch (error) {
       console.error('Error borrowing book:', error);
@@ -98,9 +141,9 @@ export const BookProvider = ({ children }) => {
   };
 
   // Buy a book
-  const buyBook = async (bookId) => {
+  const buyBook = async (bookId, formData) => {
     try {
-      const response = await api.post(`/books/${bookId}/buy`);
+      const response = await api.post(`/books/${bookId}/buy`, formData);
       return { success: true, message: response?.data?.message || 'Book purchased successfully' };
     } catch (error) {
       console.error('Error buying book:', error);
@@ -130,10 +173,14 @@ export const BookProvider = ({ children }) => {
 
   const value = {
     books,
+    myBooks,
     loading,
     categories,
     fetchBooks,
+    fetchMyBooks,
     addBook,
+    updateBook,
+    deleteBook,
     getBookById,
     borrowBook,
     buyBook,
