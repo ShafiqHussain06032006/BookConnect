@@ -11,13 +11,14 @@ const Navbar = () => {
   const location = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
+  const [showChatModal, setShowChatModal] = useState(false);
   const dropdownRef = useRef(null);
 
   const navLinks = [
     { name: 'Home', path: '/' },
     { name: 'Browse', path: '/browse' },
     { name: 'Upload', path: '/upload', protected: true },
-    { name: 'Chat', path: '/chat', protected: true },
+    { name: 'Chat', path: '/chat', protected: true, comingSoon: true },
   ];
 
   const isActive = (path) => location.pathname === path;
@@ -65,6 +66,20 @@ const Navbar = () => {
         <div className="nav-links">
           {navLinks.map((link) => {
             if (link.protected && !isAuthenticated) return null;
+            
+            // Handle coming soon links
+            if (link.comingSoon) {
+              return (
+                <button
+                  key={link.path}
+                  onClick={() => setShowChatModal(true)}
+                  className="nav-link"
+                >
+                  {link.name}
+                </button>
+              );
+            }
+            
             return (
               <Link
                 key={link.path}
@@ -87,7 +102,11 @@ const Navbar = () => {
                 className="profile-button"
               >
                 <div className="user-avatar">
-                  <span>{getInitials(user?.name)}</span>
+                  {user?.profilePicture ? (
+                    <img src={user.profilePicture} alt={user.name} className="w-full h-full object-cover rounded-full" />
+                  ) : (
+                    <span>{getInitials(user?.name)}</span>
+                  )}
                 </div>
                 <span className="user-name-desktop">{user?.name}</span>
                 <svg
@@ -106,7 +125,11 @@ const Navbar = () => {
                   {/* User Info Section */}
                   <div className="dropdown-user-info">
                     <div className="dropdown-avatar">
-                      {getInitials(user?.name)}
+                      {user?.profilePicture ? (
+                        <img src={user.profilePicture} alt={user.name} className="w-full h-full object-cover rounded-full" />
+                      ) : (
+                        getInitials(user?.name)
+                      )}
                     </div>
                     <div className="dropdown-user-details">
                       <p className="dropdown-username">{user?.name}</p>
@@ -115,7 +138,7 @@ const Navbar = () => {
                         <p className="dropdown-phone">{user.phone}</p>
                       )}
                       <span className="account-badge">
-                        {user?.loginMethod === 'google' ? '🔗 Google Account' : '📧 Email Account'}
+                        {user?.loginMethod === 'google' ? 'Google Account' : 'Email Account'}
                       </span>
                     </div>
                   </div>
@@ -196,6 +219,23 @@ const Navbar = () => {
         <div className="mobile-menu">
           {navLinks.map((link) => {
             if (link.protected && !isAuthenticated) return null;
+            
+            // Handle coming soon links in mobile
+            if (link.comingSoon) {
+              return (
+                <button
+                  key={link.path}
+                  onClick={() => {
+                    setShowChatModal(true);
+                    setIsMobileMenuOpen(false);
+                  }}
+                  className="mobile-link"
+                >
+                  {link.name}
+                </button>
+              );
+            }
+            
             return (
               <Link
                 key={link.path}
@@ -212,7 +252,11 @@ const Navbar = () => {
             <div className="mobile-user-section">
               <div className="mobile-user-info">
                 <div className="mobile-avatar">
-                  {getInitials(user?.name)}
+                  {user?.profilePicture ? (
+                    <img src={user.profilePicture} alt={user.name} className="w-full h-full object-cover rounded-full" />
+                  ) : (
+                    getInitials(user?.name)
+                  )}
                 </div>
                 <div className="mobile-user-details">
                   <span className="mobile-username">{user?.name}</span>
@@ -221,32 +265,32 @@ const Navbar = () => {
               </div>
 
               <Link
-                to="/profile"
+                to="/dashboard"
                 onClick={() => setIsMobileMenuOpen(false)}
                 className="mobile-menu-link"
               >
-                👤 My Profile
+                Dashboard
               </Link>
               <Link
-                to="/my-books"
+                to="/dashboard/my-books"
                 onClick={() => setIsMobileMenuOpen(false)}
                 className="mobile-menu-link"
               >
-                📚 My Books
+                My Books
               </Link>
               <Link
-                to="/settings"
+                to="/dashboard/requests-sent"
                 onClick={() => setIsMobileMenuOpen(false)}
                 className="mobile-menu-link"
               >
-                ⚙️ Settings
+                Requests Sent
               </Link>
 
               <button
                 className="mobile-logout"
                 onClick={handleLogout}
               >
-                🚪 Sign Out
+                Sign Out
               </button>
             </div>
           ) : (
@@ -267,6 +311,25 @@ const Navbar = () => {
               </Link>
             </>
           )}
+        </div>
+      )}
+
+      {/* Chat Coming Soon Modal */}
+      {showChatModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl p-8 max-w-sm w-full mx-4 text-center shadow-2xl">
+            <div className="text-5xl mb-4">💬</div>
+            <h3 className="text-xl font-bold text-gray-800 mb-2">Chat Feature Coming Soon</h3>
+            <p className="text-gray-600 mb-6">
+              We're working hard to bring you an amazing chat experience. Stay tuned!
+            </p>
+            <button
+              onClick={() => setShowChatModal(false)}
+              className="bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-blue-700 transition"
+            >
+              Got it!
+            </button>
+          </div>
         </div>
       )}
     </nav>

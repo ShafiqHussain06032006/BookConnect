@@ -52,6 +52,9 @@ public class User implements UserDetails {
     @Column(length = 20)
     private String phone;
 
+    @Column(name = "profile_picture", length = 500)
+    private String profilePicture;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private AuthProvider provider;

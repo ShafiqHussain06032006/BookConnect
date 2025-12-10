@@ -23,6 +23,7 @@ public class UserMapper {
                 .name(user.getName())
                 .email(user.getEmail())
                 .phone(user.getPhone())
+                .profilePicture(user.getProfilePicture())
                 .provider(user.getProvider().name())
                 .role(user.getRole())
                 .build();
