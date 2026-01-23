@@ -28,11 +28,12 @@ RUN rm -rf ./*
 # Copy built assets from build stage
 COPY --from=build /app/dist .
 
-# Copy nginx configuration
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+# Copy nginx configuration template
+COPY nginx.conf /etc/nginx/templates/default.conf.template
 
-# Expose port 80
-EXPOSE 80
+# Railway sets PORT env variable
+ENV PORT=80
+EXPOSE $PORT
 
-# Start nginx
-CMD ["nginx", "-g", "daemon off;"]
+# Start nginx with envsubst for PORT variable
+CMD sh -c "envsubst '\$PORT' < /etc/nginx/templates/default.conf.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"
