@@ -31,9 +31,8 @@ COPY --from=build /app/dist .
 # Copy nginx configuration template
 COPY nginx.conf /etc/nginx/templates/default.conf.template
 
-# Railway sets PORT env variable
-ENV PORT=80
-EXPOSE $PORT
+# Expose port (Railway will set PORT env variable)
+EXPOSE 80
 
-# Start nginx with envsubst for PORT variable
-CMD sh -c "envsubst '\$PORT' < /etc/nginx/templates/default.conf.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"
+# Start nginx - substitute PORT variable (default to 80 if not set)
+CMD ["sh", "-c", "export PORT=${PORT:-80} && envsubst '$PORT' < /etc/nginx/templates/default.conf.template > /etc/nginx/conf.d/default.conf && exec nginx -g 'daemon off;'" ]
