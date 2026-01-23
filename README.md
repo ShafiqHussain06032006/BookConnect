@@ -2,6 +2,13 @@
 
 A full-stack book sharing platform where users can browse, borrow, and buy books from other users. Connect with fellow book lovers and share your collection!
 
+## 🚀 Live Demo
+
+| Service | URL |
+|---------|-----|
+| **Frontend** | [https://jubilant-light-production.up.railway.app](https://jubilant-light-production.up.railway.app) |
+| **Backend API** | [https://bookconnect-production.up.railway.app](https://bookconnect-production.up.railway.app) |
+
 ![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.2.0-brightgreen)
 ![React](https://img.shields.io/badge/React-18.2.0-blue)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-17-blue)
