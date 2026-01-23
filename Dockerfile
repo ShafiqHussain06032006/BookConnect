@@ -15,8 +15,9 @@ COPY --from=build /app/target/*.jar app.jar
 # Create uploads directory
 RUN mkdir -p /app/uploads/books
 
-# Expose port
-EXPOSE 8080
+# Railway uses PORT environment variable
+ENV PORT=8080
+EXPOSE $PORT
 
 # Run the application
 ENTRYPOINT ["java", "-jar", "app.jar"]
