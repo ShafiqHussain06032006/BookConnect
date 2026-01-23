@@ -1,195 +1,102 @@
-import { useState, useEffect } from 'react';
+import { useBooks } from '../../context/Bookcontext';
+import { Link } from 'react-router-dom';
 
 const FamousBooks = () => {
-  const [books, setBooks] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchFamousBooks = async () => {
-      try {
-        // Using Google Books API to fetch bestsellers/popular books
-        const response = await fetch(
-          'https://www.googleapis.com/books/v1/volumes?q=subject:fiction&orderBy=relevance&maxResults=12'
-        );
-        
-        if (!response.ok) {
-          throw new Error('Failed to fetch books');
-        }
-        
-        const data = await response.json();
-        
-        const formattedBooks = data.items?.map((item) => ({
-          id: item.id,
-          title: item.volumeInfo?.title || 'Unknown Title',
-          author: item.volumeInfo?.authors?.[0] || 'Unknown Author',
-          coverImage: item.volumeInfo?.imageLinks?.thumbnail?.replace('http:', 'https:') || null,
-          rating: item.volumeInfo?.averageRating || null,
-          publishedDate: item.volumeInfo?.publishedDate?.substring(0, 4) || null,
-        })) || [];
-        
-        setBooks(formattedBooks.filter(book => book.coverImage));
-      } catch (err) {
-        console.error('Error fetching famous books:', err);
-        // Fallback to curated list with real covers
-        setBooks([
-          {
-            id: '1',
-            title: 'The Great Gatsby',
-            author: 'F. Scott Fitzgerald',
-            coverImage: 'https://covers.openlibrary.org/b/id/7222246-M.jpg',
-            rating: 4.5,
-            publishedDate: '1925',
-          },
-          {
-            id: '2',
-            title: '1984',
-            author: 'George Orwell',
-            coverImage: 'https://covers.openlibrary.org/b/id/7222336-M.jpg',
-            rating: 4.7,
-            publishedDate: '1949',
-          },
-          {
-            id: '3',
-            title: 'To Kill a Mockingbird',
-            author: 'Harper Lee',
-            coverImage: 'https://covers.openlibrary.org/b/id/8228691-M.jpg',
-            rating: 4.8,
-            publishedDate: '1960',
-          },
-          {
-            id: '4',
-            title: 'Pride and Prejudice',
-            author: 'Jane Austen',
-            coverImage: 'https://covers.openlibrary.org/b/id/8479576-M.jpg',
-            rating: 4.6,
-            publishedDate: '1813',
-          },
-          {
-            id: '5',
-            title: 'The Catcher in the Rye',
-            author: 'J.D. Salinger',
-            coverImage: 'https://covers.openlibrary.org/b/id/8231488-M.jpg',
-            rating: 4.3,
-            publishedDate: '1951',
-          },
-          {
-            id: '6',
-            title: 'Harry Potter',
-            author: 'J.K. Rowling',
-            coverImage: 'https://covers.openlibrary.org/b/id/10521270-M.jpg',
-            rating: 4.9,
-            publishedDate: '1997',
-          },
-          {
-            id: '7',
-            title: 'The Hobbit',
-            author: 'J.R.R. Tolkien',
-            coverImage: 'https://covers.openlibrary.org/b/id/6979861-M.jpg',
-            rating: 4.7,
-            publishedDate: '1937',
-          },
-          {
-            id: '8',
-            title: 'Brave New World',
-            author: 'Aldous Huxley',
-            coverImage: 'https://covers.openlibrary.org/b/id/5112241-M.jpg',
-            rating: 4.4,
-            publishedDate: '1932',
-          },
-        ]);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchFamousBooks();
-  }, []);
+  const { books, loading } = useBooks();
+  
+  // Get first 8 books to display as "famous/featured" books
+  const featuredBooks = books.slice(0, 8);
 
   if (loading) {
     return (
-      <section className="py-20 bg-gradient-to-b from-gray-50 to-white">
+      <section className="py-16 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
-              Popular Books
-            </h2>
-            <p className="text-gray-500 max-w-2xl mx-auto">
-              Discover bestselling titles loved by readers worldwide
-            </p>
-          </div>
-          <div className="flex justify-center items-center py-16">
-            <div className="relative">
-              <div className="w-12 h-12 border-4 border-blue-200 rounded-full"></div>
-              <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin absolute top-0"></div>
-            </div>
+          <h2 className="text-3xl font-bold text-center mb-10">Featured Books</h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            {[...Array(4)].map((_, i) => (
+              <div key={i} className="animate-pulse">
+                <div className="bg-gray-200 h-64 rounded-xl mb-3"></div>
+                <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+                <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
     );
   }
 
+  if (featuredBooks.length === 0) {
+    return (
+      <section className="py-16 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 text-center">
+          <h2 className="text-3xl font-bold mb-4">Featured Books</h2>
+          <p className="text-gray-600 mb-6">No books available yet. Be the first to share!</p>
+          <Link 
+            to="/upload" 
+            className="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition"
+          >
+            Upload a Book
+          </Link>
+        </div>
+      </section>
+    );
+  }
+
   return (
-    <section className="py-20 bg-gradient-to-b from-gray-50 to-white">
+    <section className="py-16 bg-gray-50">
       <div className="max-w-7xl mx-auto px-4">
-        {/* Section Header */}
-        <div className="text-center mb-14">
-          <span className="inline-block px-4 py-1.5 bg-blue-100 text-blue-700 text-sm font-medium rounded-full mb-4">
-            Trending Now
-          </span>
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
-            Popular Books
-          </h2>
-          <p className="text-gray-500 max-w-2xl mx-auto">
-            Explore timeless classics and contemporary bestsellers that have captivated millions of readers
+        <div className="text-center mb-10">
+          <h2 className="text-3xl font-bold text-gray-900 mb-3">Featured Books</h2>
+          <p className="text-gray-600 max-w-2xl mx-auto">
+            Discover amazing books shared by our community members
           </p>
         </div>
-
-        {/* Books Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-5">
-          {books.slice(0, 12).map((book) => (
-            <div
+        
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+          {featuredBooks.map((book) => (
+            <Link 
+              to="/browse" 
               key={book.id}
-              className="group cursor-pointer"
+              className="group bg-white rounded-xl shadow-sm hover:shadow-lg transition overflow-hidden"
             >
-              {/* Book Cover */}
-              <div className="relative mb-3 rounded-lg overflow-hidden shadow-md group-hover:shadow-xl transition-all duration-300">
-                <div className="aspect-[2/3] bg-gray-100">
-                  <img
-                    src={book.coverImage}
-                    alt={book.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    onError={(e) => {
-                      e.target.src = 'https://via.placeholder.com/150x225?text=No+Cover';
-                    }}
-                  />
-                </div>
-                {/* Overlay on hover */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  <div className="absolute bottom-3 left-3 right-3">
-                    {book.rating && (
-                      <div className="flex items-center gap-1 text-white text-sm">
-                        <svg className="w-4 h-4 text-yellow-400 fill-current" viewBox="0 0 20 20">
-                          <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
-                        </svg>
-                        <span>{book.rating}</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
+              <div className="relative overflow-hidden">
+                <img
+                  src={book.image || book.imageUrl || '/placeholder-book.png'}
+                  alt={book.title}
+                  className="w-full h-56 object-cover group-hover:scale-105 transition duration-300"
+                />
+                <span className={`absolute top-3 right-3 px-2 py-1 text-xs font-semibold rounded-full ${
+                  book.type === 'Paid' || book.type === 'PAID' 
+                    ? 'bg-green-100 text-green-700' 
+                    : 'bg-blue-100 text-blue-700'
+                }`}>
+                  {book.type === 'Paid' || book.type === 'PAID' ? `Rs. ${book.price}` : 'Free'}
+                </span>
               </div>
-              
-              {/* Book Info */}
-              <div className="px-1">
-                <h3 className="font-semibold text-gray-900 text-sm leading-tight line-clamp-2 group-hover:text-blue-600 transition-colors">
+              <div className="p-4">
+                <h3 className="font-semibold text-gray-900 line-clamp-1 group-hover:text-blue-600 transition">
                   {book.title}
                 </h3>
-                <p className="text-gray-500 text-xs mt-1 truncate">{book.author}</p>
-                {book.publishedDate && (
-                  <p className="text-gray-400 text-xs mt-0.5">{book.publishedDate}</p>
-                )}
+                <p className="text-sm text-gray-500 line-clamp-1">{book.author}</p>
+                <span className="inline-block mt-2 text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">
+                  {book.category}
+                </span>
               </div>
-            </div>
+            </Link>
           ))}
+        </div>
+        
+        <div className="text-center mt-10">
+          <Link 
+            to="/browse" 
+            className="inline-flex items-center gap-2 bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition font-medium"
+          >
+            Browse All Books
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+            </svg>
+          </Link>
         </div>
       </div>
     </section>
