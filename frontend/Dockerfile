@@ -28,11 +28,11 @@ RUN rm -rf ./*
 # Copy built assets from build stage
 COPY --from=build /app/dist .
 
-# Copy nginx configuration template
-COPY nginx.conf /etc/nginx/templates/default.conf.template
+# Copy nginx configuration
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Expose port (Railway will set PORT env variable)
+# Expose port 80
 EXPOSE 80
 
-# Start nginx - substitute PORT variable (default to 80 if not set)
-CMD ["sh", "-c", "export PORT=${PORT:-80} && envsubst '$PORT' < /etc/nginx/templates/default.conf.template > /etc/nginx/conf.d/default.conf && exec nginx -g 'daemon off;'" ]
+# Start nginx
+CMD ["nginx", "-g", "daemon off;"]
